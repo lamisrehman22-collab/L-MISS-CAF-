@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Espresso Patronum | Coffee & Sanctuary</title>
+  <!-- Google Fonts: unique modern sans & serif -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <!-- Font Awesome 6 (free icons) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #0a0806;
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+
+    /* ---- PATRONUM ANIMATION (full screen overlay) ---- */
+    .patronum-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #0c0a07;
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+      opacity: 1;
+      pointer-events: none;
+    }
+    .patronum-overlay.fade-out {
+      opacity: 0;
+      visibility: hidden;
+    }
+    .patronum-img {
+      width: 280px;
+      max-width: 50vw;
+      animation: floatGlow 1.6s ease-out forwards, softAppear 1.2s ease;
+      filter: drop-shadow(0 0 12px rgba(218,165,32,0.5));
+    }
+    @keyframes floatGlow {
+      0% { transform: scale(0.6) translateY(30px); opacity: 0; }
+      40% { transform: scale(1.05) translateY(-6px); opacity: 1; }
+      100% { transform: scale(1) translateY(0px); opacity: 1; }
+    }
+    @keyframes softAppear {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    /* ---- HERO SECTION (full screen image) ---- */
+    .hero-section {
+      width: 100%;
+      height: 100vh;
+      background: url('Images/main.png') no-repeat center center;
+      background-size: cover;
+      background-attachment: scroll;
+      position: relative;
+      transition: all 0.2s ease;
+    }
+
+    /* scroll-trigger horizontal panel */
+    .horizontal-panel {
+      position: sticky;
+      top: 0;
+      width: 100%;
+      background: rgba(10, 8, 6, 0.92);
+      backdrop-filter: blur(16px);
+      z-index: 100;
+      transform: translateY(-100%);
+      opacity: 0;
+      transition: transform 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1), opacity 0.4s ease;
+      border-bottom: 1px solid rgba(218,165,32,0.25);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+    .horizontal-panel.visible {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    .panel-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+    .cafe-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      font-weight: 600;
+      letter-spacing: 2px;
+      background: linear-gradient(135deg, #e9d6a7, #c7a252);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .cafe-tagline {
+      font-size: 0.85rem;
+      color: #d4c2a0;
+      letter-spacing: 1px;
+      font-weight: 300;
+    }
+
+    /* MENU SECTION (background) */
+    .menu-section {
+      background: url('Images/onkkisu.bg.jpg') no-repeat center center fixed;
+      background-size: cover;
+      padding: 4rem 2rem 6rem;
+      position: relative;
+      width: 100%;
+    }
+    .menu-section::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.45);
+      z-index: 1;
+    }
+    .menu-container {
+      position: relative;
+      z-index: 2;
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+    /* floating toggle options */
+    .menu-toggle {
+      display: flex;
+      justify-content: center;
+      gap: 2.5rem;
+      margin-bottom: 4rem;
+    }
+    .toggle-opt {
+      font-size: 1.8rem;
+      font-weight: 700;
+      padding: 0.5rem 1.8rem;
+      border-radius: 60px;
+      cursor: pointer;
+      transition: 0.3s;
+      background: rgba(20,18,16,0.7);
+      backdrop-filter: blur(8px);
+      color: #e0cfb0;
+      letter-spacing: 1px;
+    }
+    .toggle-opt.active {
+      background: #c49a3b;
+      color: #0e0b07;
+      box-shadow: 0 0 15px rgba(196,154,59,0.6);
+    }
+    /* carousel area */
+    .carousel-area {
+      position: relative;
+      min-height: 550px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .menu-carousel {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+    }
+    .carousel-arrow {
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(12px);
+      width: 56px;
+      height: 56px;
+      border-radius: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      color: #f3e5c0;
+      cursor: pointer;
+      transition: 0.2s;
+      border: 1px solid rgba(218,165,32,0.5);
+    }
+    .carousel-arrow:hover {
+      background: #c49a3b;
+      color: #111;
+      transform: scale(1.05);
+    }
+    .card-item {
+      background: rgba(25,22,18,0.75);
+      backdrop-filter: blur(12px);
+      border-radius: 42px;
+      padding: 2rem 2rem 1.8rem;
+      text-align: center;
+      width: 320px;
+      transition: all 0.3s;
+      border: 1px solid rgba(218,165,32,0.35);
+      box-shadow: 0 20px 30px -12px rgba(0,0,0,0.5);
+    }
+    .card-item img {
+      width: 220px;
+      height: 220px;
+      object-fit: contain;
+      filter: drop-shadow(0 6px 12px rgba(0,0,0,0.5));
+    }
+    .card-item h3 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-top: 1rem;
+      color: #f7e9cf;
+      font-family: 'Cormorant Garamond', serif;
+    }
+    .price {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #e7bc6e;
+      margin: 0.7rem 0;
+    }
+    .order-btn {
+      background: #c49a3b;
+      border: none;
+      padding: 0.6rem 1.8rem;
+      border-radius: 40px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: 0.2s;
+      color: #0e0b07;
+      margin-top: 0.5rem;
+    }
+    .order-btn:hover {
+      background: #e9bc6d;
+      transform: scale(1.02);
+    }
+
+    /* Why choose us: 3 pillars (horizontal row, mobile scroll but must stay together) */
+    .why-choose {
+      background: url('Images/interior.bg.png') no-repeat center center;
+      background-size: cover;
+      padding: 5rem 1.5rem;
+      position: relative;
+    }
+    .why-choose::before {
+      content: "";
+      background: rgba(0,0,0,0.55);
+      position: absolute;
+      inset: 0;
+    }
+    .pillars-wrapper {
+      position: relative;
+      z-index: 3;
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      gap: 2rem;
+      scrollbar-width: thin;
+      padding-bottom: 1rem;
+    }
+    .pillars-wrapper::-webkit-scrollbar {
+      height: 6px;
+    }
+    .pillar {
+      flex: 0 0 320px;
+      background: rgba(20, 18, 16, 0.75);
+      backdrop-filter: blur(14px);
+      border-radius: 48px;
+      padding: 2rem 1.5rem;
+      transition: transform 0.2s;
+      border: 1px solid rgba(210, 180, 110, 0.5);
+      box-shadow: 0 20px 28px -10px black;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    /* each pillar slight color palette */
+    .pillar:nth-child(1) {
+      background: rgba(45, 32, 22, 0.8);
+      border-top: 4px solid #b58b3b;
+    }
+    .pillar:nth-child(2) {
+      background: rgba(35, 28, 48, 0.8);
+      border-top: 4px solid #c89d5c;
+    }
+    .pillar:nth-child(3) {
+      background: rgba(20, 28, 34, 0.85);
+      border-top: 4px solid #cfb27c;
+    }
+    .pillar-icon {
+      width: 110px;
+      height: 110px;
+      margin-bottom: 1.2rem;
+      filter: drop-shadow(0 8px 12px rgba(0,0,0,0.5));
+      transition: transform 0.3s;
+    }
+    .pillar:hover .pillar-icon {
+      transform: scale(1.03) rotate(1deg);
+    }
+    .pillar h3 {
+      font-size: 1.9rem;
+      font-weight: 700;
+      margin-bottom: 0.8rem;
+      color: #f3e1b3;
+      font-family: 'Cormorant Garamond', serif;
+    }
+    .pillar p {
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: #f0e2ca;
+      font-weight: 400;
+    }
+
+    /* Footer aesthetic */
+    .aesthetic-footer {
+      background: #0f0d0a;
+      padding: 3rem 2rem 2rem;
+      border-top: 1px solid rgba(218,165,32,0.3);
+      color: #cfc3aa;
+    }
+    .footer-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+    .footer-brand h3 {
+      font-size: 2rem;
+      font-family: 'Cormorant Garamond', serif;
+      color: #e1c87b;
+    }
+    .footer-links i, .footer-social i {
+      margin-right: 10px;
+      width: 28px;
+    }
+    .footer-links p, .footer-social p {
+      margin: 0.6rem 0;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .footer-links p:hover, .footer-social p:hover {
+      color: #e7bc6e;
+      transform: translateX(6px);
+    }
+    .copyright {
+      text-align: center;
+      margin-top: 3rem;
+      font-size: 0.8rem;
+      opacity: 0.7;
+    }
+    @media (max-width: 700px) {
+      .card-item { width: 280px; padding: 1.5rem; }
+      .card-item img { width: 170px; height: 170px; }
+      .toggle-opt { font-size: 1.3rem; padding: 0.3rem 1.2rem; }
+      .cafe-name { font-size: 1.5rem; }
+    }
+    @media (max-width: 550px) {
+      .pillars-wrapper { gap: 1rem; }
+      .pillar { flex: 0 0 85vw; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Patronum animation overlay -->
+<div id="patronumOverlay" class="patronum-overlay">
+  <img src="Images/petronum.png" alt="Espresso Patronum" class="patronum-img">
+</div>
+
+<!-- Hero section (full screen main.png) -->
+<div class="hero-section" id="heroSection"></div>
+
+<!-- Horizontal panel that appears on scroll -->
+<div class="horizontal-panel" id="horizontalPanel">
+  <div class="panel-container">
+    <div class="cafe-name">Espresso Patronum</div>
+    <div class="cafe-tagline"><i class="fas fa-mug-hot"></i> Brewed with intention · Served with magic</div>
+  </div>
+</div>
+
+<!-- Menu section with background -->
+<div class="menu-section" id="menuSection">
+  <div class="menu-container">
+    <div class="menu-toggle">
+      <div class="toggle-opt active" data-menu="caffeine">Caffaine</div>
+      <div class="toggle-opt" data-menu="pastry">Pastry</div>
+    </div>
+    <div class="carousel-area">
+      <div class="carousel-arrow left-arrow" id="leftArrow"><i class="fas fa-angle-left"></i></div>
+      <div id="carouselCard" class="menu-carousel"></div>
+      <div class="carousel-arrow right-arrow" id="rightArrow"><i class="fas fa-angle-right"></i></div>
+    </div>
+  </div>
+</div>
+
+<!-- Why Choose Us - 3 Pillars -->
+<div class="why-choose">
+  <div class="pillars-wrapper" id="pillarsWrapper">
+    <!-- pillar 1 -->
+    <div class="pillar">
+      <img src="Images/chess.board.png" alt="chess board" class="pillar-icon">
+      <h3>Strategic Serenity</h3>
+      <p>Every table is a battlefield. Enjoy our premium artisan coffee while engaging in a deep game of strategy. With a handcrafted chess set at every seat, we provide the perfect blend of mental stimulation and caffeine-fueled focus.</p>
+    </div>
+    <!-- pillar 2 -->
+    <div class="pillar">
+      <img src="Images/art.png" alt="art exhibition" class="pillar-icon">
+      <h3>A Canvas for Community</h3>
+      <p>More than just a café, we are a gallery in motion. Participate in or admire our weekly curated art exhibitions. We celebrate local creativity, turning our space into a living journal of inspiration every single week.</p>
+    </div>
+    <!-- pillar 3 -->
+    <div class="pillar">
+      <img src="Images/night.owl.png" alt="night owl study" class="pillar-icon">
+      <h3>Sanctuary for Night Owls</h3>
+      <p>Designed for the dedicated and the disciplined. Whether you are an HSC student or a creative professional, our silent, sophisticated atmosphere is the perfect refuge for all-nighters. Find your flow in a space that respects your silence and fuels your ambition.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="aesthetic-footer">
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <h3><i class="fas fa-hat-wizard"></i> Espresso Patronum</h3>
+      <p style="margin-top: 0.6rem;">Where coffee meets alchemy</p>
+      <p><i class="fas fa-map-marker-alt"></i> Dhaka, Bangladesh · Arts District</p>
+    </div>
+    <div class="footer-links">
+      <p><i class="fas fa-clock"></i> Open daily: 8AM – 2AM</p>
+      <p><i class="fas fa-chess-queen"></i> Chess tournaments weekly</p>
+      <p><i class="fas fa-palette"></i> Art exhibition: every Monday</p>
+    </div>
+    <div class="footer-social">
+      <p><i class="fab fa-instagram"></i> @patronum.cafe</p>
+      <p><i class="fab fa-twitter"></i> @espressopatron</p>
+      <p><i class="fas fa-envelope"></i> hello@patronum.art</p>
+    </div>
+  </div>
+  <div class="copyright">
+    <i class="fas fa-crown"></i> 2026 Espresso Patronum — brewed with intention & design
+  </div>
+</footer>
+
+<script>
+  // ---------- CAFFAINE MENU DATA (exactly as per order) ----------
+  const caffeineMenu = [
+    { name: "Velvet Latte", image: "Images/velvet_latte.png", price: "$5.9" },
+    { name: "Spanish Latte", image: "Images/spanish_latte.png", price: "$6.4" },
+    { name: "Midnight Espresso", image: "Images/midnight_espresso.png", price: "$4.8" },
+    { name: "Mocha Noir", image: "Images/mocha_noir.png", price: "$6.2" },
+    { name: "Matcha Latte", image: "Images/matcha_latte.png", price: "$5.7" },
+    { name: "Lavender Milk", image: "Images/lavender_milk.png", price: "$5.5" },
+    { name: "Honey Cinnamon Latte", image: "Images/honey_cinnamon_latte.png", price: "$6.9" },
+    { name: "Dhakai Milk Tea", image: "Images/Dhakai_milk_tea.png", price: "$4.5" },
+    { name: "Decaf Latte", image: "Images/decaf_latte.png", price: "$5.2" },
+    { name: "Dark Roast Americano", image: "Images/dark_roast_americano.png", price: "$4.2" }
+  ];
+
+  // Pastry dummy data (optional because by default caffeine active, but we support)
+  const pastryMenu = [
+    { name: "Croissant au Beurre", image: "Images/pastry1.png", price: "$3.2" },
+    { name: "Cinnamon Scroll", image: "Images/pastry2.png", price: "$3.8" },
+    { name: "Almond Danish", image: "Images/pastry3.png", price: "$4.1" }
+  ];
+
+  let currentMenuType = "caffeine";   // caffeine by default
+  let currentCaffeineIndex = 0;
+  let currentPastryIndex = 0;
+
+  function getCurrentMenuArray() {
+    return currentMenuType === "caffeine" ? caffeineMenu : pastryMenu;
+  }
+
+  function getCurrentIndex() {
+    return currentMenuType === "caffeine" ? currentCaffeineIndex : currentPastryIndex;
+  }
+
+  function setCurrentIndex(val) {
+    if (currentMenuType === "caffeine") currentCaffeineIndex = val;
+    else currentPastryIndex = val;
+  }
+
+  function renderCarousel() {
+    const menuArray = getCurrentMenuArray();
+    let idx = getCurrentIndex();
+    // boundary wrap
+    if (menuArray.length === 0) return;
+    if (idx >= menuArray.length) idx = 0;
+    if (idx < 0) idx = menuArray.length - 1;
+    setCurrentIndex(idx);
+    const item = menuArray[idx];
+    const carouselDiv = document.getElementById("carouselCard");
+    if (!carouselDiv) return;
+    carouselDiv.innerHTML = `
+      <div class="card-item">
+        <img src="${item.image}" alt="${item.name}" onerror="this.src='https://placehold.co/400x400?text=Artisan+Drink'">
+        <h3>${item.name}</h3>
+        <div class="price">${item.price}</div>
+        <button class="order-btn"><i class="fas fa-coffee"></i> Order now</button>
+      </div>
+    `;
+    // attach order event (just alert for demo)
+    const btn = carouselDiv.querySelector(".order-btn");
+    if (btn) {
+      btn.addEventListener("click", () => {
+        alert(`✨ Added "${item.name}" to your patronus order! ✨`);
+      });
+    }
+  }
+
+  function nextItem() {
+    let arr = getCurrentMenuArray();
+    let idx = getCurrentIndex();
+    idx = (idx + 1) % arr.length;
+    setCurrentIndex(idx);
+    renderCarousel();
+  }
+
+  function prevItem() {
+    let arr = getCurrentMenuArray();
+    let idx = getCurrentIndex();
+    idx = (idx - 1 + arr.length) % arr.length;
+    setCurrentIndex(idx);
+    renderCarousel();
+  }
+
+  // toggle between caffeine / pastry
+  function setMenuType(type) {
+    currentMenuType = type;
+    // reset index to 0 for new category
+    if (type === "caffeine") {
+      currentCaffeineIndex = 0;
+    } else {
+      currentPastryIndex = 0;
+    }
+    // update active toggle style
+    document.querySelectorAll('.toggle-opt').forEach(opt => {
+      if (opt.getAttribute('data-menu') === type) opt.classList.add('active');
+      else opt.classList.remove('active');
+    });
+    renderCarousel();
+  }
+
+  // Event listeners & scroll logic for horizontal panel
+  window.addEventListener('DOMContentLoaded', () => {
+    // --- Patronum animation: hide after 1.6s and show hero properly ---
+    const patronumOverlay = document.getElementById('patronumOverlay');
+    if (patronumOverlay) {
+      setTimeout(() => {
+        patronumOverlay.classList.add('fade-out');
+        // remove from dom after transition
+        setTimeout(() => {
+          if(patronumOverlay && patronumOverlay.parentNode) patronumOverlay.style.display = 'none';
+        }, 800);
+      }, 1600);
+    }
+
+    // initialize carousel
+    renderCarousel();
+
+    // attach arrows
+    document.getElementById('leftArrow')?.addEventListener('click', prevItem);
+    document.getElementById('rightArrow')?.addEventListener('click', nextItem);
+
+    // toggle listeners
+    document.querySelectorAll('.toggle-opt').forEach(opt => {
+      opt.addEventListener('click', (e) => {
+        const type = opt.getAttribute('data-menu');
+        if (type === 'caffeine') setMenuType('caffeine');
+        else if (type === 'pastry') setMenuType('pastry');
+      });
+    });
+
+    // ---------- Horizontal panel appears after scroll (hero section partly scrolled) ----------
+    const panel = document.getElementById('horizontalPanel');
+    const hero = document.getElementById('heroSection');
+    const handleScrollForPanel = () => {
+      if (!hero) return;
+      const heroBottom = hero.getBoundingClientRect().bottom;
+      // if hero section is out of view (scrolled past its bottom) OR scrolled > 80vh
+      if (window.scrollY > window.innerHeight * 0.7 || heroBottom <= 0) {
+        panel.classList.add('visible');
+      } else {
+        panel.classList.remove('visible');
+      }
+    };
+    window.addEventListener('scroll', handleScrollForPanel);
+    handleScrollForPanel();
+
+    // Ensure hero image fits full screen: already via CSS cover. Just preload check images for main.png, but ok.
+    // also for any missing images fallback, but we trust provided paths. Add extra style fix.
+    // ensure 3 pillars horizontal scroll on mobile but always together: we use flex nowrap, overflow auto, so no break.
+    // all good.
+
+    // Optional: for extra flair, add a minimal scroll parallax? not required but fine.
+    // fix for any images that might not load (set default placeholder for missing images only for demo but user has images)
+    // Also for the 'why choose' icons 3d effect: already with hover transform
+  });
+
+  // also to avoid issues with arrow touch on mobile
+  // ensure on resize carousel stays consistent
+  window.addEventListener('resize', () => {
+    // no rerender needed but keep carousel stable
+  });
+  // preload first images
+  function preloadImages(arr) {
+    arr.forEach(item => {
+      const img = new Image();
+      img.src = item.image;
+    });
+  }
+  preloadImages(caffeineMenu);
+  preloadImages(pastryMenu);
+  // additional preload for hero main, chess, art, night owl etc but not mandatory
+</script>
+</body>
+</html>
